@@ -5,8 +5,6 @@ class Player{
     int x,y;
     int brushR, brushG, brushB, brushSize;
 
-    Client client;
-
     // Default Constructor no Parameters (used on Server cause Id gets added later)
     Player(){
         id = 0;
@@ -63,7 +61,7 @@ class Player{
         return json;
     }
 
-    JSONObject getJson(){
+    JSONObject getJSON(){
         json = new JSONObject();
 
         json.setInt("id", id);

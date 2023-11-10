@@ -7,6 +7,9 @@
 import processing.net.*;
 import java.util.HashSet;
 import java.util.HashMap;
+import java.util.ArrayList;
+
+import java.util.Random;
 
 int i, id, x, y; 
 Server s;
@@ -14,10 +17,13 @@ Player p;
 
 HashSet<Client> clientSet;
 HashMap<Integer, Player> playerMap;
+ArrayList<Pickup> pickupList;
 
 
 JSONArray serverJson;
 JSONArray playerMapJson;
+
+Random rd;
 
 void setup(){
     size(1000,1000);
@@ -29,6 +35,11 @@ void setup(){
 
     clientSet = new HashSet<Client>();
     playerMap = new HashMap<Integer, Player>();
+    pickupList = new ArrayList<Pickup>();
+
+    rd = new Random();
+
+    createStartingPickups(8);
 }
 
 
@@ -68,13 +79,19 @@ void draw(){
     // Loops through all connected Players and adds them to playerMapJSON
     if(playerMap.size()>0){
         for (Player p : playerMap.values()){
-            playerMapJson.setJSONObject(i, p.getJson());
+            playerMapJson.setJSONObject(i, p.getJSON());
             p.display();
             i++;
            
         }
     }
 
+    // DEBUG: Display Pickups on Server
+    if(pickupList.size()>0){
+        for(Pickup p : pickupList){
+            p.display();
+        }
+    }
 
     // Initialize final JSONArray which gets sent to the Client, includes all Players and Pickups
     serverJson = new JSONArray();
@@ -85,6 +102,21 @@ void draw(){
     s.write(serverJson.toString());
     
 }
+
+
+// Create 8 new Random Pickups
+void createStartingPickups(int amount){
+    for(int i = 0; i < amount; i++){
+        if(rd.nextBoolean()){
+            pickupList.add(new ColorPickup()); 
+        }else{
+            pickupList.add(new SizePickup());
+        }
+    }
+}
+
+
+
 
 
 // serverEvent() is called whenever a Client connects to the Server
