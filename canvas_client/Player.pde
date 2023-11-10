@@ -88,6 +88,14 @@ class Player{
         return this.brushR;
     }
 
+    public int getBrushG(){
+        return this.brushG;
+    }
+
+    public int getBrushB(){
+        return this.brushB;
+    }
+
     public void setBrushR(int brushR) {
         this.brushR = brushR;
     }
@@ -102,6 +110,10 @@ class Player{
 
     public void setBrushSize(int brushSize) {
         this.brushSize = brushSize;
+    }
+
+    public int getBrushSize(){
+        return brushSize;
     }
 
     public void setId(int id){

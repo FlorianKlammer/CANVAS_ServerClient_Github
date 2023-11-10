@@ -5,9 +5,7 @@
 
 
 import processing.net.*;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.*;
 
 import java.util.Random;
 
@@ -22,6 +20,7 @@ ArrayList<Pickup> pickupList;
 
 JSONArray serverJson;
 JSONArray playerMapJson;
+JSONArray pickupListJson;
 
 Random rd;
 
@@ -46,7 +45,7 @@ void setup(){
 void draw(){
     noStroke();
     // Receive Data from all Clients, changes the Corresponding Players X,Y and id. 
-    // The id seems unneccessary since it never changes but I haven't found a good way to do overcome this yet
+    // The id seems unneccessary since it never changes but for time reasons i'm not making it more efficient
     if(clientSet.size()>0){
         for (Client c : clientSet){
             // Check if Client has available Message
@@ -65,9 +64,47 @@ void draw(){
                     p = playerMap.get(c.hashCode());
                     p.setXY(x,y);
                     p.setId(id);
+
+                    // Pickup Collision Detection
+                    for (Iterator<Pickup> it = pickupList.iterator(); it.hasNext();){
+                        Pickup pickup = it.next();
+                        if(pickup.collision(x,y, p.getBrushSize())){
+                            println("True");
+                            String type = pickup.getType();
+
+                            if (type.equals("Color")){
+                                ColorPickup cp = (ColorPickup)pickup;
+
+                                p.setBrushR(cp.getR());
+                                p.setBrushG(cp.getG());
+                                p.setBrushB(cp.getB());
+
+                            } else if (type.equals("Size")){
+                                SizePickup sp = (SizePickup)pickup;
+
+                                p.setBrushSize(p.getBrushSize()+sp.getSizeChange());
+                            }
+
+                            it.remove();
+                        }
+                    }
                 }
                 
             }
+        }
+    }
+
+    // Initialize empty JSONArray which will store all the Pickup Data for sending to the Client
+    pickupListJson = new JSONArray();
+    i = 0;
+
+    // Loops through all Pickups and adds them to pickupListJSON
+    if(pickupList.size()>0){
+        for(Pickup p : pickupList){
+            pickupListJson.setJSONObject(i, p.getJSON());
+            i++;
+            
+            p.display();
         }
     }
 
@@ -86,16 +123,13 @@ void draw(){
         }
     }
 
-    // DEBUG: Display Pickups on Server
-    if(pickupList.size()>0){
-        for(Pickup p : pickupList){
-            p.display();
-        }
-    }
+    
+    
 
     // Initialize final JSONArray which gets sent to the Client, includes all Players and Pickups
     serverJson = new JSONArray();
     serverJson.setJSONArray(0, playerMapJson);
+    serverJson.setJSONArray(1, pickupListJson);
     
 
     //Write final JSON to Clients

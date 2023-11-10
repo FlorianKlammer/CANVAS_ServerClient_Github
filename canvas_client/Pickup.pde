@@ -7,6 +7,7 @@ class Pickup{
   int x,y;
   int radius;
   int frameCreated;
+  String type;
   
   // Default constructor (no arguments)
   Pickup(){
@@ -14,6 +15,17 @@ class Pickup{
     y = int(random(height));
     radius = 40;
     frameCreated = frameCount;
+    type = "";
+  }
+
+  // JSON Constructor
+  Pickup(JSONObject json){
+    
+    x = json.getInt("x");
+    y = json.getInt("y");
+    radius = json.getInt("radius");
+    frameCreated = json.getInt("frameCreated");
+    type = json.getString("type");
   }
   
   // Display Pickup on Screen
@@ -23,9 +35,9 @@ class Pickup{
   }
   
   // Check if the Brush touches the Pickup
-  boolean collision(int brushSize){
+  boolean collision(int playerX, int playerY, int brushSize){
     boolean b;
-    if( (mouseX <= x+brushSize && mouseX >= x-brushSize) && (mouseY <= y+brushSize && mouseY >= y-brushSize) ){
+    if( (playerX <= x+brushSize && playerX >= x-brushSize) && (playerX <= y+brushSize && playerY >= y-brushSize) ){
       b = true;
     }
     else{
@@ -57,8 +69,20 @@ class Pickup{
   String toString(){
     return "X: " + x + " Y: " + y + " RADIUS: " + radius + " Frame created: " + frameCreated;
   }
+
+  JSONObject getJSON(){
+    json.setInt("frameCreated", frameCreated);
+    json.setString("type", type);
+    json.setInt("x", x);
+    json.setInt("y", y);
+    json.setInt("radius", radius);
+
+    return json;
+  }
   
-  
+  String getType(){
+    return type;
+  }
 }
 
 // A ColorPickup Object
@@ -72,6 +96,18 @@ class ColorPickup extends Pickup{
     r = int(random(255));
     g = int(random(255));
     b = int(random(255));
+    
+    type = "Color";
+  }
+
+  // JSON Constructor
+  ColorPickup(JSONObject json){
+    super(json);
+
+    r = json.getInt("r");
+    g = json.getInt("g");
+    b = json.getInt("b");
+
   }
   
   @Override void display(){
@@ -94,6 +130,22 @@ class ColorPickup extends Pickup{
     return b;
   }
   
+  @Override JSONObject getJSON(){
+    json = new JSONObject();
+
+    json.setInt("frameCreated", frameCreated);
+    json.setString("type", type);
+    json.setInt("x", x);
+    json.setInt("y", y);
+    json.setInt("radius", radius);
+    
+    json.setInt("r", r);
+    json.setInt("g", g);
+    json.setInt("b", b);
+
+  
+    return json;
+  }
   
   // Standard Function that returns all variables as a String, mainly used for debugging
   @Override String toString(){
@@ -118,9 +170,33 @@ class SizePickup extends Pickup {
     else{
       sizeChange = -20;
     }
+
+    type = "Size";
     
   }
+
+  SizePickup(JSONObject json){
+    super(json);
+
+    sizeChange = json.getInt("sizeChange");
+  }
   
+   @Override JSONObject getJSON(){
+    json = new JSONObject();
+
+    json.setInt("frameCreated", frameCreated);
+    json.setString("type", type);
+    json.setInt("x", x);
+    json.setInt("y", y);
+    json.setInt("radius", radius);
+    
+    json.setInt("sizeChange", sizeChange);
+
+  
+    return json;
+  }
+
+
   // Draws Pickup on Screen
   // TODO: Fix Triangle Weirdness
   @Override void display(){
