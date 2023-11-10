@@ -2,6 +2,8 @@ import java.util.Random; // Used in SizePickup for either - or + BrushSize
 
 // Parent Class from which ColorPickup and SizePickup inherit from
 class Pickup{
+
+  JSONObject json;
   int x,y;
   int radius;
   int frameCreated;
@@ -92,6 +94,13 @@ class ColorPickup extends Pickup{
     return b;
   }
   
+  JSONObject getJSON(){
+    json = new JSONObject();
+
+    json.setInt("frameCreated", frameCreated)
+    // TODO: THIS FUNCTION
+    return json;
+  }
   
   // Standard Function that returns all variables as a String, mainly used for debugging
   @Override String toString(){
